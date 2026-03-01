@@ -5,6 +5,7 @@ import fr.husi.fmt.FmtTestConstant
 import fr.husi.fmt.trojan.TrojanBean
 import fr.husi.fmt.trojan.parseTrojan
 import fr.husi.ktx.JSONMap
+import fr.husi.ktx.b64EncodeOneLine
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -38,6 +39,35 @@ class V2RayFmtTest {
         assertEquals("uuid", bean.uuid)
         assertEquals("grpc", bean.v2rayTransport)
         assertEquals("xtls-rprx-vision", bean.flow)
+    }
+
+    @Test
+    fun `parseV2Ray should parse v2rayN vmess with numeric port and aid`() {
+        val shareJson = """
+            {
+              "port": 38949,
+              "aid": 0,
+              "id": "c7d456c6-fac6-41ae-988b-5fe46b951ec6",
+              "ps": "test-node",
+              "add": "13.11.16.140",
+              "tls": "none",
+              "v": "2",
+              "net": "tcp",
+              "host": "",
+              "path": "",
+              "type": "none"
+            }
+        """.trimIndent()
+        val link = "vmess://${shareJson.b64EncodeOneLine()}"
+
+        val bean = parseV2Ray(link)
+
+        assertIs<VMessBean>(bean)
+        assertEquals("13.11.16.140", bean.serverAddress)
+        assertEquals(38949, bean.serverPort)
+        assertEquals(0, bean.alterId)
+        assertEquals("c7d456c6-fac6-41ae-988b-5fe46b951ec6", bean.uuid)
+        assertEquals("tcp", bean.v2rayTransport)
     }
 
     @Test
