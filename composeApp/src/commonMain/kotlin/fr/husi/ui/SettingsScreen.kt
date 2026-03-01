@@ -62,6 +62,7 @@ import fr.husi.Key
 import fr.husi.NetworkInterfaceStrategy
 import fr.husi.ProtocolProvider
 import fr.husi.RuleProvider
+import fr.husi.SniffOverrideDestination
 import fr.husi.TunImplementation
 import fr.husi.bg.BackendState
 import fr.husi.bg.Executable
@@ -181,6 +182,7 @@ import fr.husi.resources.ntp_server_address
 import fr.husi.resources.ntp_server_port
 import fr.husi.resources.ntp_sum
 import fr.husi.resources.ntp_sync_interval
+import fr.husi.resources.off
 import fr.husi.resources.ok
 import fr.husi.resources.person
 import fr.husi.resources.plugin
@@ -208,6 +210,9 @@ import fr.husi.resources.settings
 import fr.husi.resources.show_direct_speed
 import fr.husi.resources.show_direct_speed_sum
 import fr.husi.resources.speed
+import fr.husi.resources.sniff_override_destination
+import fr.husi.resources.sniff_result_for_destination
+import fr.husi.resources.sniff_result_for_route
 import fr.husi.resources.system_and_user
 import fr.husi.resources.test_concurrency
 import fr.husi.resources.test_timeout
@@ -1266,6 +1271,47 @@ fun SettingsScreen(
                             valueToText = { it },
                             textField = { value, onValueChange, onOk ->
                                 PortTextField(value, onValueChange, onOk)
+                            },
+                        )
+                    }
+                    item(Key.INBOUND_SNIFF_OVERRIDE_DESTINATION, PreferenceType.LIST) {
+                        fun sniffModeText(value: Int): StringResource = when (value) {
+                            SniffOverrideDestination.OFF -> Res.string.off
+                            SniffOverrideDestination.ROUTE_ONLY -> Res.string.sniff_result_for_route
+                            SniffOverrideDestination.DESTINATION -> Res.string.sniff_result_for_destination
+                            else -> Res.string.off
+                        }
+
+                        val value by DataStore.configurationStore
+                            .intFlow(
+                                Key.INBOUND_SNIFF_OVERRIDE_DESTINATION,
+                                SniffOverrideDestination.OFF,
+                            )
+                            .collectAsStateWithLifecycle(SniffOverrideDestination.OFF)
+
+                        ListPreference(
+                            value = value,
+                            onValueChange = {
+                                DataStore.inboundSniffOverrideDestination = it
+                                needReload()
+                            },
+                            values = listOf(
+                                SniffOverrideDestination.OFF,
+                                SniffOverrideDestination.ROUTE_ONLY,
+                                SniffOverrideDestination.DESTINATION,
+                            ),
+                            title = { Text(stringResource(Res.string.sniff_override_destination)) },
+                            icon = {
+                                Icon(
+                                    vectorResource(Res.drawable.router),
+                                    null,
+                                )
+                            },
+                            summary = { Text(stringResource(sniffModeText(value))) },
+                            type = ListPreferenceType.DROPDOWN_MENU,
+                            valueToText = {
+                                val text = runBlocking { repo.getString(sniffModeText(it)) }
+                                AnnotatedString(text)
                             },
                         )
                     }

@@ -572,6 +572,9 @@
     <string name="prefer_ipv6">IPv6 优先</string>
     <string name="ipv4_only">仅 IPv4</string>
     <string name="ipv6_only">仅 IPv6</string>
+    <string name="sniff_override_destination">嗅探覆写目标地址</string>
+    <string name="sniff_result_for_route">探测结果用于路由判断</string>
+    <string name="sniff_result_for_destination">探测结果用于目标地址</string>
     <string name="sniff">嗅探</string>
     <string name="network_strategy">网络策略</string>
     <string name="hijack_dns">劫持 DNS</string>

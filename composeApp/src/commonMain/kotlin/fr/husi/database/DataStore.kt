@@ -9,6 +9,7 @@ import fr.husi.NetworkInterfaceStrategy
 import fr.husi.ProtocolProvider
 import fr.husi.SPEED_TEST_UPLOAD_URL
 import fr.husi.SPEED_TEST_URL
+import fr.husi.SniffOverrideDestination
 import fr.husi.TrafficSortMode
 import fr.husi.TunImplementation
 import fr.husi.bg.ServiceState
@@ -188,6 +189,9 @@ object DataStore {
     var providerNaive by configurationStore.int(Key.PROVIDER_NAIVE) { ProtocolProvider.CORE }
 
     var tunImplementation by configurationStore.int(Key.TUN_IMPLEMENTATION) { TunImplementation.MIXED }
+    var inboundSniffOverrideDestination by configurationStore.int(
+        Key.INBOUND_SNIFF_OVERRIDE_DESTINATION,
+    ) { SniffOverrideDestination.OFF }
     var profileTrafficStatistics by configurationStore.boolean(Key.PROFILE_TRAFFIC_STATISTICS) { true }
     var certProvider by configurationStore.int(Key.CERT_PROVIDER) { CertProvider.MOZILLA }
     var disableProcessText by configurationStore.boolean(Key.DISABLE_PROCESS_TEXT)

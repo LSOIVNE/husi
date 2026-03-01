@@ -3,6 +3,7 @@ package fr.husi.fmt
 import fr.husi.Key
 import fr.husi.NetworkInterfaceStrategy
 import fr.husi.RuleProvider
+import fr.husi.SniffOverrideDestination
 import fr.husi.TunImplementation
 import fr.husi.bg.VpnConstants
 import fr.husi.database.DataStore
@@ -224,6 +225,9 @@ fun buildConfig(
     val bypassDNSBeans = hashSetOf<AbstractBean>()
     val isVPN = DataStore.serviceMode == Key.MODE_VPN
     val bind = if (!forTest && DataStore.allowAccess) "0.0.0.0" else LOCALHOST4
+    val inboundSniffMode = DataStore.inboundSniffOverrideDestination
+    val inboundSniffEnabled = inboundSniffMode != SniffOverrideDestination.OFF
+    val inboundSniffOverrideDestination = inboundSniffMode == SniffOverrideDestination.DESTINATION
     val remoteDns = DataStore.remoteDns.split("\n")
         .mapNotNull { dns -> dns.trim().takeIf { it.isNotBlank() && !it.startsWith("#") } }
     val directDNS = DataStore.directDns.split("\n")
@@ -304,6 +308,8 @@ fun buildConfig(
                 Inbound_TunOptions().apply {
                     type = SingBoxOptions.TYPE_TUN
                     tag = TAG_TUN
+                    sniff = inboundSniffEnabled
+                    sniff_override_destination = inboundSniffOverrideDestination
                     stack = when (DataStore.tunImplementation) {
                         TunImplementation.GVISOR -> "gvisor"
                         TunImplementation.SYSTEM -> "system"
@@ -335,6 +341,8 @@ fun buildConfig(
                     tag = TAG_MIXED
                     listen = bind
                     listen_port = DataStore.mixedPort
+                    sniff = inboundSniffEnabled
+                    sniff_override_destination = inboundSniffOverrideDestination
                     if (!repo.isAndroid) {
                         if (DataStore.appendHttpProxy) {
                             set_system_proxy = true

@@ -99,6 +99,7 @@ object Key {
     const val ACQUIRE_WAKE_LOCK = "acquireWakeLock"
 
     const val TUN_IMPLEMENTATION = "tunImplementation"
+    const val INBOUND_SNIFF_OVERRIDE_DESTINATION = "inboundSniffOverrideDestination"
     const val PROFILE_TRAFFIC_STATISTICS = "profileTrafficStatistics"
 
     const val CERT_PROVIDER = "certProvider"
@@ -146,6 +147,12 @@ object TunImplementation {
     const val GVISOR = 0
     const val SYSTEM = 1
     const val MIXED = 2
+}
+
+object SniffOverrideDestination {
+    const val OFF = 0
+    const val ROUTE_ONLY = 1
+    const val DESTINATION = 2
 }
 
 object GroupType {

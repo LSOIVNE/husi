@@ -623,6 +623,9 @@
     <string name="prefer_ipv6">Prefer IPv6</string>
     <string name="ipv4_only">IPv4 Only</string>
     <string name="ipv6_only">IPv6 Only</string>
+    <string name="sniff_override_destination">Sniff Override Destination</string>
+    <string name="sniff_result_for_route">Sniff result for route</string>
+    <string name="sniff_result_for_destination">Sniff result for destination</string>
     <string name="sniff">Sniff</string>
     <string name="network_strategy">Network Strategy</string>
     <string name="hijack_dns">Hijack DNS</string>
