@@ -41,6 +41,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
+import fr.husi.Key
 import fr.husi.compose.theme.AppTheme
 import fr.husi.database.DataStore
 import fr.husi.repository.repo
@@ -79,6 +80,9 @@ class SwitchActivity : ComposeActivity() {
 
                 val uiState by vm.uiState.collectAsStateWithLifecycle()
                 val selectedGroup by vm.selectedGroup.collectAsStateWithLifecycle(DataStore.selectedGroup)
+                val sortingEnabled by DataStore.configurationStore
+                    .booleanFlow(Key.SORTING_ENABLED, false)
+                    .collectAsStateWithLifecycle(false)
                 val hasGroups = uiState.groups.isNotEmpty()
                 val pagerState = rememberPagerState(
                     initialPage = uiState.groups
@@ -166,6 +170,7 @@ class SwitchActivity : ComposeActivity() {
                             preSelected = null,
                             selectCallback = ::returnProfile,
                             bottomPadding = bottomPadding,
+                            sortingEnabled = sortingEnabled,
                         )
                     }
                 }

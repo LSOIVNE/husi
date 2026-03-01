@@ -65,6 +65,7 @@ import com.ernestoyaquello.dragdropswipelazycolumn.config.DraggableSwipeableItem
 import com.ernestoyaquello.dragdropswipelazycolumn.state.rememberDragDropSwipeLazyColumnState
 import fr.husi.bg.BackendState
 import fr.husi.bg.ServiceState
+import fr.husi.Key
 import androidx.compose.foundation.layout.fillMaxHeight
 import fr.husi.compose.BoxedVerticalScrollbar
 import fr.husi.compose.PlatformMenuIcon
@@ -115,6 +116,7 @@ import fr.husi.resources.route_manage_assets
 import fr.husi.resources.route_proxy
 import fr.husi.resources.route_reset
 import fr.husi.resources.route_warn
+import fr.husi.resources.sort
 import fr.husi.resources.undo
 import io.github.oikvpqya.compose.fastscroller.material3.defaultMaterialScrollbarStyle
 import kotlinx.collections.immutable.toImmutableList
@@ -146,6 +148,9 @@ fun RouteScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showMoreAction by remember { mutableStateOf(false) }
     var showResetAlert by remember { mutableStateOf(false) }
+    val sortingEnabled by DataStore.configurationStore
+        .booleanFlow(Key.SORTING_ENABLED, false)
+        .collectAsStateWithLifecycle(false)
 
     fun needReload() = scope.launch {
         if (!DataStore.serviceState.started) return@launch
@@ -230,6 +235,16 @@ fun RouteScreen(
                                     Icon(
                                         imageVector = vectorResource(Res.drawable.layers),
                                         contentDescription = null,
+                                    )
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(Res.string.sort)) },
+                                onClick = { DataStore.sortingEnabled = !sortingEnabled },
+                                trailingIcon = {
+                                    Switch(
+                                        checked = sortingEnabled,
+                                        onCheckedChange = { DataStore.sortingEnabled = it },
                                     )
                                 },
                             )
@@ -361,6 +376,7 @@ fun RouteScreen(
                                 viewModel = viewModel,
                                 onNeedReload = { needReload() },
                                 openRouteSettings = openRouteSettings,
+                                sortingEnabled = sortingEnabled,
                             )
                         }
                     }
@@ -429,6 +445,7 @@ private fun DraggableSwipeableItemScope<RuleEntity>.RuleCard(
     viewModel: RouteScreenViewModel,
     onNeedReload: () -> Unit,
     openRouteSettings: (Long) -> Unit,
+    sortingEnabled: Boolean,
 ) {
     ElevatedCard(
         modifier = modifier
@@ -444,11 +461,21 @@ private fun DraggableSwipeableItemScope<RuleEntity>.RuleCard(
             Icon(
                 imageVector = vectorResource(Res.drawable.drag_indicator),
                 contentDescription = "Drag to reorder",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(8.dp)
-                    .dragDropModifier(),
+                tint = if (sortingEnabled) {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                },
+                modifier = if (sortingEnabled) {
+                    Modifier
+                        .size(40.dp)
+                        .padding(8.dp)
+                        .dragDropModifier()
+                } else {
+                    Modifier
+                        .size(40.dp)
+                        .padding(8.dp)
+                },
             )
 
             Column(

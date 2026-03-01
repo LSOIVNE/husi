@@ -137,6 +137,7 @@ internal fun GroupHolderScreen(
     onCopySuccess: () -> Unit,
     showSnackbar: (message: StringOrRes) -> Unit,
     showUndoSnackbar: (count: Int, onUndo: () -> Unit) -> Unit,
+    sortingEnabled: Boolean,
     onScrollHideChange: (Boolean) -> Unit = {},
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -271,6 +272,7 @@ internal fun GroupHolderScreen(
                     trafficStatistic = trafficStatistics,
                     securityAdvice = securityAdvisory,
                     showActions = showActions,
+                    sortingEnabled = sortingEnabled,
                 )
             }
         }
@@ -316,6 +318,7 @@ private fun DraggableSwipeableItemScope<ProfileItem>.ProxyCard(
     trafficStatistic: Boolean,
     securityAdvice: Boolean,
     showActions: Boolean = true,
+    sortingEnabled: Boolean,
 ) {
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
@@ -394,12 +397,23 @@ private fun DraggableSwipeableItemScope<ProfileItem>.ProxyCard(
             Icon(
                 imageVector = vectorResource(Res.drawable.drag_indicator),
                 contentDescription = "Drag to reorder",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .size(40.dp)
-                    .padding(8.dp)
-                    .dragDropModifier(),
+                tint = if (sortingEnabled) {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                },
+                modifier = if (sortingEnabled) {
+                    Modifier
+                        .align(Alignment.CenterVertically)
+                        .size(40.dp)
+                        .padding(8.dp)
+                        .dragDropModifier()
+                } else {
+                    Modifier
+                        .align(Alignment.CenterVertically)
+                        .size(40.dp)
+                        .padding(8.dp)
+                },
             )
 
             Column(

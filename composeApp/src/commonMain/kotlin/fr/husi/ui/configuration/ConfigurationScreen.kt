@@ -43,6 +43,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
@@ -75,6 +76,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
+import fr.husi.Key
 import fr.husi.bg.BackendState
 import fr.husi.bg.ServiceState
 import fr.husi.compose.BoxedVerticalScrollbar
@@ -155,6 +157,7 @@ import fr.husi.resources.remove_duplicate
 import fr.husi.resources.removed
 import fr.husi.resources.search
 import fr.husi.resources.search_go
+import fr.husi.resources.sort
 import fr.husi.resources.sort_mode
 import fr.husi.resources.undo
 import fr.husi.ui.MainViewModel
@@ -271,6 +274,9 @@ fun ConfigurationScreen(
     var showOverflowMenu by remember { mutableStateOf(false) }
     var showConnectionTestMenu by remember { mutableStateOf(false) }
     var showOrderMenu by remember { mutableStateOf(false) }
+    val sortingEnabled by DataStore.configurationStore
+        .booleanFlow(Key.SORTING_ENABLED, false)
+        .collectAsStateWithLifecycle(false)
     val searchBarState = rememberSearchBarState()
     val searchTextFieldState = vm.searchTextFieldState
 
@@ -677,6 +683,16 @@ fun ConfigurationScreen(
                                     showOverflowMenu = false
                                     showOrderMenu = true
                                 }
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(Res.string.sort)) },
+                                    onClick = { DataStore.sortingEnabled = !sortingEnabled },
+                                    trailingIcon = {
+                                        Switch(
+                                            checked = sortingEnabled,
+                                            onCheckedChange = { DataStore.sortingEnabled = it },
+                                        )
+                                    },
+                                )
                             }
                             DropdownMenu(
                                 expanded = showConnectionTestMenu,
@@ -824,6 +840,7 @@ fun ConfigurationScreen(
             selectCallback = selectCallback,
             bottomPadding = bottomPadding,
             onScrollHideChange = { scrollHideVisible = it },
+            sortingEnabled = sortingEnabled,
             openProfileEditor = openProfileEditor,
         )
     }
@@ -868,6 +885,7 @@ fun ConfigurationContent(
     preSelected: Long?,
     selectCallback: ((id: Long) -> Unit)?,
     bottomPadding: Dp,
+    sortingEnabled: Boolean,
     openProfileEditor: ((type: Int, id: Long, isSubscription: Boolean, onResult: (updated: Boolean) -> Unit) -> Unit)? = null,
     onScrollHideChange: (Boolean) -> Unit = {},
 ) {
@@ -966,6 +984,7 @@ fun ConfigurationContent(
                             onScrollHideChange(visible)
                         }
                     },
+                    sortingEnabled = sortingEnabled,
                 )
             }
         }

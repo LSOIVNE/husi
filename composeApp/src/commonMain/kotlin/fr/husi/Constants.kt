@@ -119,6 +119,7 @@ object Key {
     const val PROFILE_CURRENT = "profileCurrent"
 
     const val RULES_FIRST_CREATE = "rulesFirstCreate"
+    const val SORTING_ENABLED = "sortingEnabled"
 
 }
 

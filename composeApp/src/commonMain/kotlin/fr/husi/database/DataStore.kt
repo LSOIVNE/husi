@@ -215,6 +215,7 @@ object DataStore {
 
     var uploadSpeed by configurationStore.int(Key.UPLOAD_SPEED) { 0 }
     var downloadSpeed by configurationStore.int(Key.DOWNLOAD_SPEED) { 0 }
+    var sortingEnabled by configurationStore.boolean(Key.SORTING_ENABLED) { false }
     var customPluginPrefix by configurationStore.string(Key.CUSTOM_PLUGIN_PREFIX)
 
     var rulesFirstCreate by configurationStore.boolean(Key.RULES_FIRST_CREATE)
