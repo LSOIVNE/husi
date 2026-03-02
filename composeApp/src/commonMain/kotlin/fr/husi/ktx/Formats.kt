@@ -41,16 +41,22 @@ fun String.b64Decode(): ByteArray {
     // padding 自动处理，不用理
     // URLSafe 需要替换这两个，不要用 UrlSafe 否则处理非 Safe 的时候会乱码
     val str = replace("-", "+").replace("_", "/")
+    val padded = when (val rem = str.length % 4) {
+        0 -> str
+        else -> str + "=".repeat(4 - rem)
+    }
 
     val decoders = listOf(
         Base64.Default,
         Base64.Mime,
     )
 
-    for (decoder in decoders) {
-        try {
-            return decoder.decode(str)
-        } catch (_: Exception) {
+    for (candidate in listOf(str, padded).distinct()) {
+        for (decoder in decoders) {
+            try {
+                return decoder.decode(candidate)
+            } catch (_: Exception) {
+            }
         }
     }
 
