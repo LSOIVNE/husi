@@ -66,6 +66,7 @@ import fr.husi.fmt.v2ray.buildSingBoxOutboundStandardV2RayBean
 import fr.husi.fmt.wireguard.WireGuardBean
 import fr.husi.fmt.wireguard.buildSingBoxEndpointWireGuardBean
 import fr.husi.ktx.JSONMap
+import fr.husi.ktx.asMap
 import fr.husi.ktx.asKxsMap
 import fr.husi.ktx.toJsonObjectKxs
 import fr.husi.ktx.blankAsNull
@@ -516,7 +517,7 @@ fun buildConfig(
                             buildSingBoxOutboundShadowTLSBean(bean).asKxsMap()
 
                         is StandardV2RayBean -> // http/trojan/vmess/vless
-                            buildSingBoxOutboundStandardV2RayBean(bean).asKxsMap()
+                            buildSingBoxOutboundStandardV2RayBean(bean).asMap()
 
                         is HysteriaBean -> buildSingBoxOutboundHysteriaBean(bean).asKxsMap()
 

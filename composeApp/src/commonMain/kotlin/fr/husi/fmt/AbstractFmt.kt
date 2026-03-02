@@ -74,6 +74,7 @@ import fr.husi.ktx.getIntOrNull
 import fr.husi.ktx.getObject
 import fr.husi.ktx.getStr
 import fr.husi.ktx.kxs
+import fr.husi.ktx.asMap
 import fr.husi.ktx.toJsonStringKxs
 
 fun AbstractBean.toJsonStringKxs(): String = when (this) {
@@ -105,7 +106,7 @@ fun buildSingBoxOutbound(bean: AbstractBean): String = when (bean) {
     is ConfigBean -> bean.config // What if full config?
     is DirectBean -> kxs.encodeToString(buildSingBoxOutboundDirectBean(bean).apply { tag = bean.name })
     is StandardV2RayBean ->
-        buildSingBoxOutboundStandardV2RayBean(bean).apply { tag = bean.name }.toJsonStringKxs()
+        buildSingBoxOutboundStandardV2RayBean(bean).apply { tag = bean.name }.asMap().toJsonStringKxs()
     is HysteriaBean ->
         buildSingBoxOutboundHysteriaBean(bean).apply { tag = bean.name }.toJsonStringKxs()
     is ShadowsocksBean ->

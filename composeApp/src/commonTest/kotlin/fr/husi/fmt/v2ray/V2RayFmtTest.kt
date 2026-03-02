@@ -1,11 +1,13 @@
 package fr.husi.fmt.v2ray
 
 import fr.husi.fmt.SingBoxOptions
+import fr.husi.fmt.buildSingBoxOutbound
 import fr.husi.fmt.FmtTestConstant
 import fr.husi.fmt.trojan.TrojanBean
 import fr.husi.fmt.trojan.parseTrojan
 import fr.husi.ktx.JSONMap
 import fr.husi.ktx.b64EncodeOneLine
+import fr.husi.ktx.toJsonMapKxs
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -68,6 +70,33 @@ class V2RayFmtTest {
         assertEquals(0, bean.alterId)
         assertEquals("c7d456c6-fac6-41ae-988b-5fe46b951ec6", bean.uuid)
         assertEquals("tcp", bean.v2rayTransport)
+    }
+
+    @Test
+    fun `parseV2Ray should keep ws path for v2rayN vmess with outer query`() {
+        val shareJson = """
+            {
+              "port": 443,
+              "aid": 0,
+              "id": "c7d456c6-fac6-41ae-988b-5fe46b951ec6",
+              "ps": "test-ws",
+              "add": "example.com",
+              "tls": "tls",
+              "v": "2",
+              "net": "ws",
+              "host": "ws.example.com",
+              "path": "/ws-path",
+              "type": "none"
+            }
+        """.trimIndent()
+        val link = "vmess://${shareJson.b64EncodeOneLine()}?remarks=ignored"
+
+        val bean = parseV2Ray(link)
+
+        assertIs<VMessBean>(bean)
+        assertEquals("ws", bean.v2rayTransport)
+        assertEquals("/ws-path", bean.path)
+        assertEquals("ws.example.com", bean.host)
     }
 
     @Test
@@ -160,6 +189,27 @@ class V2RayFmtTest {
         assertEquals(tls.enabled, true)
         assertEquals("sni.example.com", tls.server_name)
         assertEquals(tls.insecure, true)
+    }
+
+    @Test
+    fun `buildSingBoxOutbound should include websocket path in transport`() {
+        val bean = VMessBean().apply {
+            serverAddress = "example.com"
+            serverPort = 443
+            uuid = "test-uuid"
+            encryption = "auto"
+            v2rayTransport = "ws"
+            path = "/ws-path"
+            host = "ws.example.com"
+            security = "tls"
+            sni = "sni.example.com"
+        }
+
+        val outbound = buildSingBoxOutbound(bean).toJsonMapKxs()
+        val transport = outbound["transport"] as Map<*, *>
+
+        assertEquals("ws", transport["type"])
+        assertEquals("/ws-path", transport["path"])
     }
 
     @Test
