@@ -8,6 +8,7 @@ import androidx.work.ExistingPeriodicWorkPolicy.UPDATE
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkerParameters
 import androidx.work.multiprocess.RemoteWorkManager
+import fr.husi.compose.theme.getPrimaryColor
 import fr.husi.lib.R
 import fr.husi.database.DataStore
 import fr.husi.database.SagerDatabase
@@ -63,6 +64,7 @@ actual object SubscriptionUpdater {
                 .setTicker(repo.getString(Res.string.forward_success))
                 .setContentTitle(repo.getString(Res.string.subscription_update))
                 .setSmallIcon(R.drawable.ic_service_active)
+                .setColor(applicationContext.getPrimaryColor())
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
         }
 
